@@ -1,4 +1,4 @@
-using MLJExampleInterface # substitute for correct interface pkg name
+using MLJTextAnalysisInterface # substitute for correct interface pkg name
 using Test
 using MLJBase
 import Distributions
@@ -10,7 +10,7 @@ rng = StableRNGs.StableRNG(123)
     p = 3
     nclasses = 5
     X, y = make_blobs(n, p, centers=nclasses, rng=rng);
-    model = MLJExampleInterface.CoolProbabilisticClassifier()
+    model = MLJTextAnalysisInterface.CoolProbabilisticClassifier()
     mach = machine(model, X, y)
     fit!(mach, rows=1:2, verbosity=0)
     yhat = predict(mach, rows=3)

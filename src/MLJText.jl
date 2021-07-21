@@ -1,11 +1,10 @@
-module MLJExampleInterface
+module MLJText
 
-# Example.jl doesn't actually provide machine learning models, so we
-# provide a module below with the same name to furnish us with simple
-# constant probabilistic classification. Note that `Example.fit`
-# ignores the training features `Xmatrix`.
+# The following is just boostrap code to get a working template. You
+# will remove this and replace "import .TextAnalysis" with "import
+# TextAnalysis" and any other deps you need.
 
-module Example
+module TextAnalysis
 
 function fit(Xmatrix::Matrix, yint::AbstractVector{<:Integer})
     classes = sort(unique(yint))
@@ -36,11 +35,11 @@ end # of module
 
 ### CONTINUATION OF TEMPLATE
 
-import .Example # substitute model-providing package name here (no dot)
+import .TextAnalysis # substitute model-providing package name here (no dot)
 import MLJModelInterface
 import ScientificTypesBase
 
-const PKG = "Example"          # substitute model-providing package name
+const PKG = "TextAnalysis"          # substitute model-providing package name
 const MMI = MLJModelInterface
 const STB = ScientificTypesBase
 
@@ -66,7 +65,7 @@ function MMI.fit(::CoolProbabilisticClassifier, verbosity, X, y)
     decode = MMI.decoder(y[1])                # for decoding int repr.
     classes_seen = decode(sort(unique(yint))) # ordered by int repr.
 
-    Θ = Example.fit(Xmatrix, yint)            # probability vector
+    Θ = TextAnalysis.fit(Xmatrix, yint)            # probability vector
     fitresult = (Θ, classes_seen)
     report = (n_classes_seen = length(classes_seen),)
     cache = nothing
@@ -79,7 +78,7 @@ function MMI.predict(::CoolProbabilisticClassifier, fitresult, Xnew)
     Xmatrix = MMI.matrix(Xnew)
 
     Θ, classes_seen = fitresult
-    prob_matrix = Example.predict(Xmatrix, Θ)
+    prob_matrix = TextAnalysis.predict(Xmatrix, Θ)
 
     # `classes_seen` is a categorical vector whose pool actually
     # includes *all* classes. The `UnivariateFinite` constructor
@@ -100,7 +99,7 @@ end
 MMI.metadata_pkg(CoolProbabilisticClassifier,
              name="$PKG",
              uuid="7876af07-990d-54b4-ab0e-23690620f79a",
-             url="https://github.com/JuliaLang/Example.jl",
+             url="https://github.com/JuliaLang/TextAnalysis.jl",
              is_pure_julia=true,
              license="MIT",
              is_wrapper=false

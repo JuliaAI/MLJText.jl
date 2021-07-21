@@ -1,12 +1,18 @@
-name = "MLJExampleInterface"
-uuid = "33837fe5-dbff-4c9e-8c2f-c5612fe2b8b6"
-authors = ["Anthony D. Blaom <anthony.blaom@gmail.com>"]
+name = "MLJText"
+uuid = "5e27fcf9-6bac-46ba-8580-b5712f3d6387"
+authors = ["Chris Alexander, Anthony D. Blaom <anthony.blaom@gmail.com>"]
 version = "0.1.0"
 
 [deps]
-Example = "7876af07-990d-54b4-ab0e-23690620f79a"
 MLJModelInterface = "e80e1ace-859a-464e-9ed9-23947d8ae3ea"
 ScientificTypesBase = "30f210dd-8aff-4c5f-94ba-8e64358c1161"
+TextAnalysis = "a2db99b7-8b79-58f8-94bf-bbc811eef33d"
+
+[compat]
+MLJModelInterface = "1.1.1"
+ScientificTypesBase = "1"
+TextAnalysis = "0.7.3"
+julia = "1"
 
 [extras]
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
