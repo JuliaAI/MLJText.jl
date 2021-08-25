@@ -3,12 +3,11 @@ module MLJText
 import TextAnalysis # substitute model-providing package name here (no dot)
 import MLJModelInterface
 import ScientificTypesBase
-using SparseArrays
+using SparseArrays, TextAnalysis
 
 const PKG = "TextAnalysis"          # substitute model-providing package name
 const MMI = MLJModelInterface
 const STB = ScientificTypesBase
-const TA = TextAnalysis
 
 """
     TfidfTransformer()
@@ -50,7 +49,18 @@ struct TfidfTransformerResult
     idf_vector::Vector{Float64}
 end
 
-function limit_features(doc_term_matrix::TA.DocumentTermMatrix, high::Int, low::Int)
+_build_corpus(transformer::TfidfTransformer, docs::Vector{String}) = _build_corpus(transformer, StringDocument.(docs))
+
+function _build_corpus(transformer::TfidfTransformer, docs::Vector{StringDocument{String}})
+    corpus = Corpus(
+        NGramDocument.(
+            ngrams.(docs, transformer.min_ngram_range, transformer.max_ngram_range)
+        )
+    )
+    return corpus
+end
+
+function limit_features(doc_term_matrix::DocumentTermMatrix, high::Int, low::Int)
     doc_freqs = vec(sum(doc_term_matrix.dtm, dims=1))
 
     # build mask to restrict terms
@@ -67,23 +77,7 @@ function limit_features(doc_term_matrix::TA.DocumentTermMatrix, high::Int, low::
     return (doc_term_matrix.dtm[:, mask], new_terms)
 end
 
-function MMI.fit(transformer::TfidfTransformer, verbosity::Int, X::Vector{String})
-    corpus = Corpus(
-        NGramDocument.(
-            ngrams.(StringDocument.(X), transformer.min_ngram_range, transformer.max_ngram_range)
-        )
-    )
-    return _fit(transformer, verbosity, corpus)
-end
-
-function MMI.fit(transformer::TfidfTransformer, verbosity::Int, X::Vector{StringDocument{String}})
-    corpus = Corpus(
-        NGramDocument.(
-            ngrams.(X, transformer.min_ngram_range, transformer.max_ngram_range)
-        )
-    )
-    return _fit(transformer, verbosity, corpus)
-end
+MMI.fit(transformer::TfidfTransformer, verbosity::Int, X) = _fit(transformer, verbosity, _build_corpus(transformer, X))
 
 function _fit(transformer::TfidfTransformer, verbosity::Int, X::Corpus)
     transformer.max_doc_freq < transformer.min_doc_freq && error("Max doc frequency cannot be less than Min doc frequency!")
@@ -137,14 +131,10 @@ function build_tfidf!(dtm::SparseMatrixCSC{T}, tfidf::SparseMatrixCSC{F}, idf_ve
     return tfidf
 end
 
-function MMI.transform(transformer::TfidfTransformer, result::TfidfTransformerResult, v::Vector{TA.StringDocument{String}})
-    corpus = TA.Corpus(v)
+MMI.transform(transformer::TfidfTransformer, result::TfidfTransformerResult, v) = _transform(transformer, result, _build_corpus(transformer, v))
 
-    return MMI.transform(transformer, result, corpus)
-end
-
-function MMI.transform(::TfidfTransformer, result::TfidfTransformerResult, v::TA.Corpus)
-    m = TA.DocumentTermMatrix(v, result.vocab)
+function _transform(::TfidfTransformer, result::TfidfTransformerResult, v::Corpus)
+    m = DocumentTermMatrix(v, result.vocab)
     tfidf = similar(m.dtm, eltype(result.idf_vector))
     build_tfidf!(m.dtm, tfidf, result.idf_vector)
 
