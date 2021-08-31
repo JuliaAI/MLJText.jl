@@ -19,6 +19,7 @@ using MLJBase
     @test size(test2) == (1, 11)
 
     test3 = transform(test, ["Another sentence ok", "Listen Sam, today is not the day."])
-    @test rowvals(test3) == [2, 2, 2, 2]
+    @test sum(test3, dims=2)[1] == 0.0
+    @test sum(test3, dims=2)[2] > 0.0
     @test size(test3) == (2, 11)
 end
