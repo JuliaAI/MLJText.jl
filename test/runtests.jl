@@ -1,7 +1,6 @@
 using MLJText # substitute for correct interface pkg name
 using Test
 using MLJBase
-import Distributions
 
 @testset "tfidf transformer" begin
     # add some test docs
