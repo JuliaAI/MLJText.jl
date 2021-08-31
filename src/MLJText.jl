@@ -161,8 +161,8 @@ MMI.metadata_pkg(TfidfTransformer,
 )
 
 MMI.metadata_model(TfidfTransformer,
-               input_scitype = Union{MMI.Table(STB.Continuous),AbstractMatrix{STB.Continuous}},
-               output_scitype = Union{MMI.Table(STB.Continuous),AbstractMatrix{STB.Continuous}},# ie, a classifier
+               input_scitype = AbstractVector{STB.Textual},
+               output_scitype = AbstractMatrix{STB.Continuous},# ie, a classifier
                docstring = "Build TF-IDF matrix from raw documents",         # brief description
                path = "MLJText.TfidfTransformer"
                )
