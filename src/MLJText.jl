@@ -40,24 +40,11 @@ MMI.@mlj_model mutable struct TfidfTransformer <: MLJModelInterface.Unsupervised
     max_doc_freq::Float64 = 0.98
     min_doc_freq::Float64 = 0.02
     smooth_idf::Bool = true
-    min_ngram_range::Int = 1
-    max_ngram_range::Int = 1
 end
 
 struct TfidfTransformerResult
     vocab::Vector{String}
     idf_vector::Vector{Float64}
-end
-
-_build_corpus(transformer::TfidfTransformer, docs::Vector{String}) = _build_corpus(transformer, StringDocument.(docs))
-
-function _build_corpus(transformer::TfidfTransformer, docs::Vector{StringDocument{String}})
-    corpus = Corpus(
-        NGramDocument.(
-            ngrams.(docs, transformer.min_ngram_range, transformer.max_ngram_range)
-        )
-    )
-    return corpus
 end
 
 function limit_features(doc_term_matrix::DocumentTermMatrix, high::Int, low::Int)
@@ -77,7 +64,7 @@ function limit_features(doc_term_matrix::DocumentTermMatrix, high::Int, low::Int
     return (doc_term_matrix.dtm[:, mask], new_terms)
 end
 
-MMI.fit(transformer::TfidfTransformer, verbosity::Int, X) = _fit(transformer, verbosity, _build_corpus(transformer, X))
+MMI.fit(transformer::TfidfTransformer, verbosity::Int, X) = _fit(transformer, verbosity, Corpus(NGramDocument.(X)))
 
 function _fit(transformer::TfidfTransformer, verbosity::Int, X::Corpus)
     transformer.max_doc_freq < transformer.min_doc_freq && error("Max doc frequency cannot be less than Min doc frequency!")
@@ -131,7 +118,7 @@ function build_tfidf!(dtm::SparseMatrixCSC{T}, tfidf::SparseMatrixCSC{F}, idf_ve
     return tfidf
 end
 
-MMI.transform(transformer::TfidfTransformer, result::TfidfTransformerResult, v) = _transform(transformer, result, _build_corpus(transformer, v))
+MMI.transform(transformer::TfidfTransformer, result::TfidfTransformerResult, v) = _transform(transformer, result, Corpus(NGramDocument.(v)))
 
 function _transform(::TfidfTransformer, result::TfidfTransformerResult, v::Corpus)
     m = DocumentTermMatrix(v, result.vocab)
@@ -161,7 +148,7 @@ MMI.metadata_pkg(TfidfTransformer,
 )
 
 MMI.metadata_model(TfidfTransformer,
-               input_scitype = AbstractVector{STB.Textual},
+               input_scitype = AbstractVector{STB.Multiset{STB.Textual}},
                output_scitype = AbstractMatrix{STB.Continuous},# ie, a classifier
                docstring = "Build TF-IDF matrix from raw documents",         # brief description
                path = "MLJText.TfidfTransformer"
