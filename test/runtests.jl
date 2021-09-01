@@ -12,24 +12,24 @@ using TextAnalysis
 
     # train transformer
     tfidf_transformer = MLJText.TfidfTransformer()
-    test = machine(tfidf_transformer, ngram_vec)
-    MLJBase.fit!(test)
+    test_machine = machine(tfidf_transformer, ngram_vec)
+    MLJBase.fit!(test_machine)
 
     # test
     test_doc = ngrams(NGramDocument("Another sentence ok"))
-    transform(test, [test_doc])
+    test1 = transform(test_machine, [test_doc])
     @test sum(test1, dims=2)[1] == 0.0
     @test size(test1) == (1, 11)
 
     test_doc2 = ngrams(NGramDocument("Listen Sam, today is not the day."))
-    transform(test, [test_doc2])
+    test2 = transform(test_machine, [test_doc2])
     @test sum(test2, dims=2)[1] > 0.0
     @test size(test2) == (1, 11)
 
     test_doc3 = ngrams.(
         Corpus(NGramDocument("Another sentence ok"), NGramDocument("Listen Sam, today is not the day."))
     )
-    transform(test, test_doc3)
+    test3 = transform(test_machine, test_doc3)
     @test sum(test3, dims=2)[1] == 0.0
     @test sum(test3, dims=2)[2] > 0.0
     @test size(test3) == (2, 11)
