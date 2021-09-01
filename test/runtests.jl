@@ -27,7 +27,7 @@ using TextAnalysis
     @test size(test2) == (1, 11)
 
     test_doc3 = ngrams.(
-        Corpus(NGramDocument("Another sentence ok"), NGramDocument("Listen Sam, today is not the day."))
+        Corpus([NGramDocument("Another sentence ok"), NGramDocument("Listen Sam, today is not the day.")])
     )
     test3 = transform(test_machine, test_doc3)
     @test sum(test3, dims=2)[1] == 0.0
