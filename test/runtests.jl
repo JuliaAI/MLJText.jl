@@ -13,7 +13,7 @@ using TextAnalysis
     # train transformer
     tfidf_transformer = MLJText.TfidfTransformer()
     test = machine(tfidf_transformer, ngram_vec)
-    MLJ.fit!(test)
+    MLJBase.fit!(test)
 
     # test
     test_doc = ngrams(NGramDocument("Another sentence ok"))
