@@ -33,4 +33,10 @@ using TextAnalysis
     @test sum(test3, dims=2)[1] == 0.0
     @test sum(test3, dims=2)[2] > 0.0
     @test size(test3) == (2, 11)
+
+    test_doc4 = [["Another", "sentence", "ok"], ["Listen", "Sam", ",", "today", "is", "not", "the", "day", "."]]
+    test4 = transform(test_machine, test_doc4)
+    @test sum(test4, dims=2)[1] == 0.0
+    @test sum(test4, dims=2)[2] > 0.0
+    @test size(test4) == (2, 11)
 end
