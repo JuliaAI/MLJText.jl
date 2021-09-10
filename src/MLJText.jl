@@ -42,6 +42,8 @@ MMI.@mlj_model mutable struct TfidfTransformer <: MLJModelInterface.Unsupervised
     smooth_idf::Bool = true
 end
 
+const NGram{N} = NTuple{<:Any,<:AbstractString}
+
 struct TfidfTransformerResult
     vocab::Vector{String}
     idf_vector::Vector{Float64}
@@ -64,7 +66,10 @@ function limit_features(doc_term_matrix::DocumentTermMatrix, high::Int, low::Int
     return (doc_term_matrix.dtm[:, mask], new_terms)
 end
 
-build_corpus(X::Vector{Dict{String, Int64}}) = Corpus(NGramDocument.(X))
+_convert_bag_of_words(X::Dict{NGram, Int}) = Dict(join(k, " ") => v for (k, v) in X)
+
+build_corpus(X::Vector{Dict{NGram, Int}}) = build_corpus(_convert_bag_of_words.(X))
+build_corpus(X::Vector{Dict{S, Int}}) where {S <: AbstractString} = Corpus(NGramDocument.(X))
 build_corpus(X) = Corpus(TokenDocument.(X))
 
 MMI.fit(transformer::TfidfTransformer, verbosity::Int, X) = _fit(transformer, verbosity, build_corpus(X))
@@ -151,7 +156,9 @@ MMI.metadata_pkg(TfidfTransformer,
 )
 
 MMI.metadata_model(TfidfTransformer,
-               input_scitype = Union{AbstractVector{STB.Multiset{STB.Textual}}, AbstractVector{AbstractVector{STB.Textual}}},
+               input_scitype = Union{
+                   AbstractVector{<:AbstractVector{STB.Textual}}, AbstractVector{<:STB.Multiset{<:NGram}}, AbstractVector{<:STB.Multiset{STB.Textual}}
+                   },
                output_scitype = AbstractMatrix{STB.Continuous},# ie, a classifier
                docstring = "Build TF-IDF matrix from raw documents",         # brief description
                path = "MLJText.TfidfTransformer"

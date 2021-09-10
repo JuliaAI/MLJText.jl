@@ -39,4 +39,26 @@ using TextAnalysis
     @test sum(test4, dims=2)[1] == 0.0
     @test sum(test4, dims=2)[2] > 0.0
     @test size(test4) == (2, 11)
+
+    # test with bag of words
+    bag_of_words = Dict(
+        "cat in" => 1,
+        "the hat" => 1,
+        "the" => 2,
+        "cat" => 1,
+        "hat" => 1,
+        "in the" => 1,
+        "in" => 1,
+        "the cat" => 1
+    )
+    bag = Dict{MLJText.NGram, Int}(Tuple(String.(split(k))) => v for (k, v) in bag_of_words)
+    tfidf_transformer2 = MLJText.TfidfTransformer()
+    test_machine2 = machine(tfidf_transformer2, [bag])
+    MLJBase.fit!(test_machine2)
+
+    test_doc5 = ["How about a cat in a hat"]
+    test5 = transform(test_machine2, test_doc5)
+    @test sum(test5, dims=2)[1] > 0.0
+    @test size(test5) == (1, 8)
+
 end
