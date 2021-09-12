@@ -155,12 +155,16 @@ MMI.metadata_pkg(TfidfTransformer,
              is_wrapper=false
 )
 
+const ScientificNGram{N} = NTuple{<:Any,STB.Textual}
+
 MMI.metadata_model(TfidfTransformer,
                input_scitype = Union{
-                   AbstractVector{<:AbstractVector{STB.Textual}}, AbstractVector{<:STB.Multiset{<:NGram}}, AbstractVector{<:STB.Multiset{STB.Textual}}
+                   AbstractVector{<:AbstractVector{STB.Textual}},
+                   AbstractVector{<:STB.Multiset{<:ScientificNGram}},
+                   AbstractVector{<:STB.Multiset{STB.Textual}}
                    },
-               output_scitype = AbstractMatrix{STB.Continuous},# ie, a classifier
-               docstring = "Build TF-IDF matrix from raw documents",         # brief description
+               output_scitype = AbstractMatrix{STB.Continuous},
+               docstring = "Build TF-IDF matrix from raw documents",
                path = "MLJText.TfidfTransformer"
                )
 

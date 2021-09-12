@@ -12,7 +12,7 @@ using TextAnalysis
 
     # train transformer
     tfidf_transformer = MLJText.TfidfTransformer()
-    test_machine = machine(tfidf_transformer, ngram_vec)
+    test_machine = @test_logs machine(tfidf_transformer, ngram_vec)
     MLJBase.fit!(test_machine)
 
     # test
@@ -39,7 +39,6 @@ using TextAnalysis
     @test sum(test4, dims=2)[1] == 0.0
     @test sum(test4, dims=2)[2] > 0.0
     @test size(test4) == (2, 11)
-
     # test with bag of words
     bag_of_words = Dict(
         "cat in" => 1,
@@ -53,7 +52,7 @@ using TextAnalysis
     )
     bag = Dict{MLJText.NGram, Int}(Tuple(String.(split(k))) => v for (k, v) in bag_of_words)
     tfidf_transformer2 = MLJText.TfidfTransformer()
-    test_machine2 = machine(tfidf_transformer2, [bag])
+    test_machine2 = @test_logs machine(tfidf_transformer2, [bag])
     MLJBase.fit!(test_machine2)
 
     test_doc5 = ["How about a cat in a hat"]
