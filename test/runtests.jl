@@ -1,4 +1,4 @@
-using MLJText # substitute for correct interface pkg name
+using MLJText
 using Test
 using MLJBase
 using TextAnalysis
