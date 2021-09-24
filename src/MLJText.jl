@@ -78,12 +78,12 @@ function limit_features(doc_term_matrix::DocumentTermMatrix,
     return (doc_term_matrix.dtm[mask, :], new_terms)
 end
 
-_convert_bag_of_words(X::Dict{NGram, Int}) = 
+_convert_bag_of_words(X::Dict{<:NGram, <:Integer}) = 
     Dict(join(k, " ") => v for (k, v) in X)
 
-build_corpus(X::Vector{Dict{NGram, Int}}) = 
+build_corpus(X::Vector{<:Dict{<:NGram, <:Integer}}) = 
     build_corpus(_convert_bag_of_words.(X))
-build_corpus(X::Vector{Dict{S, Int}}) where {S <: AbstractString} = 
+build_corpus(X::Vector{<:Dict{S, <:Integer}}) where {S <: AbstractString} = 
     Corpus(NGramDocument.(X))
 build_corpus(X) = Corpus(TokenDocument.(X))
 
