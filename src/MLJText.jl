@@ -47,8 +47,8 @@ zero divisions: `idf(t) = log [ (1 + n) / (1 + df(t)) ] + 1`.
 
 """
 MMI.@mlj_model mutable struct TfidfTransformer <: MLJModelInterface.Unsupervised
-    max_doc_freq::Float64 = 0.98
-    min_doc_freq::Float64 = 0.02
+    max_doc_freq::Float64 = 1.0
+    min_doc_freq::Float64 = 0.0
     smooth_idf::Bool = true
 end
 

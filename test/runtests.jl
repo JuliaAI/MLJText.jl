@@ -50,7 +50,7 @@ using TextAnalysis
         "in" => 1,
         "the cat" => 1
     )
-    bag = Dict{MLJText.NGram, Int}(Tuple(String.(split(k))) => v for (k, v) in bag_of_words)
+    bag = Dict(Tuple(String.(split(k))) => v for (k, v) in bag_of_words)
     tfidf_transformer2 = MLJText.TfidfTransformer()
     test_machine2 = @test_logs machine(tfidf_transformer2, [bag])
     MLJBase.fit!(test_machine2)
