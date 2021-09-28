@@ -5,7 +5,7 @@ import MLJModelInterface
 import ScientificTypesBase
 using SparseArrays, TextAnalysis
 
-const PKG = "TextAnalysis"          # substitute model-providing package name
+const PKG = "MLJText"          # substitute model-providing package name
 const MMI = MLJModelInterface
 const STB = ScientificTypesBase
 
@@ -208,7 +208,7 @@ end
 MMI.metadata_pkg(TfidfTransformer,
              name="$PKG",
              uuid="7876af07-990d-54b4-ab0e-23690620f79a",
-             url="https://github.com/JuliaText/TextAnalysis.jl",
+             url="https://github.com/JuliaAI/MLJText.jl",
              is_pure_julia=true,
              license="MIT",
              is_wrapper=false
