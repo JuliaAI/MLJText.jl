@@ -1,11 +1,3 @@
-import MLJModelInterface
-import ScientificTypesBase
-using SparseArrays, TextAnalysis
-
-const PKG = "MLJText"          # substitute model-providing package name
-const MMI = MLJModelInterface
-const STB = ScientificTypesBase
-
 """
     TfidfTransformer()
 
