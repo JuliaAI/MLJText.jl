@@ -1,7 +1,7 @@
 # MLJText.jl
 
 An [MLJ](https://alan-turing-institute.github.io/MLJ.jl/dev/)
-extension providing tools and model for text analysis.
+extension providing tools and models for text analysis.
 
 | Linux | Coverage |
 | :------------ | :------- |
