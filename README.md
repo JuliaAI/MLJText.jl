@@ -5,7 +5,7 @@ extension providing tools and models for text analysis.
 
 | Linux | Coverage |
 | :------------ | :------- |
-| [![Build Status](https://github.com/JuliaAI/MLJText.jl/workflows/CI/badge.svg)](https://github.com/JuliaAI/MLJText.jl/actions) | [![Coverage](https://codecov.io/gh/JuliaAI/MLJText.jl/branch/master/graph/badge.svg)](https://codecov.io/github/JuliaAI/MLJText.jl?branch=master) |
+| [![Build Status](https://github.com/JuliaAI/MLJText.jl/workflows/CI/badge.svg)](https://github.com/JuliaAI/MLJText.jl/actions) | [![Coverage](https://codecov.io/gh/JuliaAI/MLJText.jl/branch/dev/graph/badge.svg)](https://codecov.io/github/JuliaAI/MLJText.jl?branch=dev) |
 
 
 The goal of this package is to provide an interface to various Natural Language Processing (NLP) resources for `MLJ` via such existing packages like [TextAnalysis](https://github.com/JuliaText/TextAnalysis.jl)
