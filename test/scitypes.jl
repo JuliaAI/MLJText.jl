@@ -1,3 +1,6 @@
+import CorpusLoaders
+using ScientificTypes
+
 @testset "text analysis" begin
     tagged_word = CorpusLoaders.PosTaggedWord("NN", "wheelbarrow")
     tagged_word2 = CorpusLoaders.PosTaggedWord("NN", "soil")
@@ -6,13 +9,14 @@
     @test scitype(bag_of_words) == Multiset{Textual}
     bag_of_tagged_words = Dict(tagged_word => 5)
     @test scitype(bag_of_tagged_words) == Multiset{Annotated{Textual}}
-    @test scitype(Document("My Document", "kadsfkj")) == Unknown
-    @test scitype(Document([tagged_word, tagged_word2])) ==
+    @test scitype(CorpusLoaders.Document("My Document", "kadsfkj")) == Unknown
+    @test scitype(CorpusLoaders.Document([tagged_word, tagged_word2])) ==
         Annotated{AbstractVector{Annotated{Textual}}}
-    @test scitype(Document("My Other Doc", [tagged_word, tagged_word2])) ==
+    @test scitype(CorpusLoaders.Document("My Other Doc",
+                                         [tagged_word, tagged_word2])) ==
         Annotated{AbstractVector{Annotated{Textual}}}
     nested_tokens = [["dog", "cat"], ["bird", "cat"]]
-    @test scitype(Document("Essay Number 1", nested_tokens)) ==
+    @test scitype(CorpusLoaders.Document("Essay Number 1", nested_tokens)) ==
         Annotated{AbstractVector{AbstractVector{Textual}}}
 
     @test scitype(Dict(("cat", "in") => 3)) == Multiset{Tuple{Textual,Textual}}

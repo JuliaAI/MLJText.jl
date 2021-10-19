@@ -1,4 +1,10 @@
 using Test
 using MLJText
 
-include("tfidf_transformer_tests.jl")
+@testset "tfidf_transformer" begin
+    include("tfidf_transformer.jl")
+end
+
+@testset "scitypes" begin
+    include("scitypes.jl")
+end
