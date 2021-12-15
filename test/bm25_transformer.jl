@@ -72,5 +72,5 @@ using TextAnalysis
     MLJBase.fit!(test_machine3)
 
     test6 = transform(test_machine3, ngram_vec)
-    @test (Vector(vec(sum(blah, dims=2))) .> 0.8) == Bool[1, 1, 1, 1, 1, 1]
+    @test (Vector(vec(sum(test6, dims=2))) .> 0.8) == Bool[1, 1, 1, 1, 1, 1]
 end

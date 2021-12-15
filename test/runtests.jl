@@ -5,6 +5,14 @@ using MLJText
     include("tfidf_transformer.jl")
 end
 
+@testset "bm25_transformer" begin
+    include("bm25_transformer.jl")
+end
+
+@testset "bagofwords_transformer" begin
+    include("bagofwords_transformer.jl")
+end
+
 @testset "scitypes" begin
     include("scitypes.jl")
 end
