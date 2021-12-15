@@ -35,115 +35,18 @@ containing every term in the collection exactly once, which prevents
 zero divisions: `idf(t) = log [ (1 + n) / (1 + df(t)) ] + 1`.
 
 """
-MMI.@mlj_model mutable struct TfidfTransformer <: MLJModelInterface.Unsupervised
+MMI.@mlj_model mutable struct TfidfTransformer <: AbstractTextTransformer
     max_doc_freq::Float64 = 1.0
     min_doc_freq::Float64 = 0.0
     smooth_idf::Bool = true
 end
-
-const NGram{N} = NTuple{<:Any,<:AbstractString}
 
 struct TfidfTransformerResult
     vocab::Vector{String}
     idf_vector::Vector{Float64}
 end
 
-function limit_features(doc_term_matrix::DocumentTermMatrix,
-                        high::Int,
-                        low::Int)
-    doc_freqs = vec(sum(doc_term_matrix.dtm, dims=2))
-
-    # build mask to restrict terms
-    mask = trues(length(doc_freqs))
-    if high < 1
-        mask .&= (doc_freqs .<= high)
-    end
-    if low > 0
-        mask .&= (doc_freqs .>= low)
-    end
-
-    new_terms = doc_term_matrix.terms[mask]
-
-    return (doc_term_matrix.dtm[mask, :], new_terms)
-end
-
-_convert_bag_of_words(X::Dict{<:NGram, <:Integer}) = 
-    Dict(join(k, " ") => v for (k, v) in X)
-
-build_corpus(X::Vector{<:Dict{<:NGram, <:Integer}}) = 
-    build_corpus(_convert_bag_of_words.(X))
-build_corpus(X::Vector{<:Dict{S, <:Integer}}) where {S <: AbstractString} = 
-    Corpus(NGramDocument.(X))
-build_corpus(X) = Corpus(TokenDocument.(X))
-
-# based on https://github.com/zgornel/StringAnalysis.jl/blob/master/src/dtm.jl
-# and https://github.com/JuliaText/TextAnalysis.jl/blob/master/src/dtm.jl
-build_dtm(docs::Corpus) = build_dtm(docs, sort(collect(keys(lexicon(docs)))))
-function build_dtm(docs::Corpus, terms::Vector{T}) where {T}
-    # we are flipping the orientation of this matrix
-    # so we get the `columnindices` from the TextAnalysis API
-    row_indices = TextAnalysis.columnindices(terms)
-
-    m = length(terms) # terms are rows
-    n = length(docs)  # docs are columns
-
-    rows = Vector{Int}(undef, 0) # terms
-    columns = Vector{Int}(undef, 0) # docs
-    values = Vector{Int}(undef, 0)
-    for i in eachindex(docs.documents)
-        doc = docs.documents[i]
-        ngs = ngrams(doc)
-        for ngram in keys(ngs)
-            j = get(row_indices, ngram, 0)
-            v = ngs[ngram]
-            if j != 0
-                push!(columns, i)
-                push!(rows, j)
-                push!(values, v)
-            end
-        end
-    end
-    if length(rows) > 0
-        dtm = sparse(rows, columns, values, m, n)
-    else
-        dtm = spzeros(Int, m, n)
-    end
-    DocumentTermMatrix(dtm, terms, row_indices)
-end
-
-MMI.fit(transformer::TfidfTransformer, verbosity::Int, X) = 
-    _fit(transformer, verbosity, build_corpus(X))
-
-function _fit(transformer::TfidfTransformer, verbosity::Int, X::Corpus)
-    transformer.max_doc_freq < transformer.min_doc_freq && 
-        error("Max doc frequency cannot be less than Min doc frequency!")
-
-    # process corpus vocab
-    update_lexicon!(X)
-    dtm_matrix = build_dtm(X)
-    n = size(dtm_matrix.dtm, 2) # docs are columns
-
-    # calculate min and max doc freq limits
-    if transformer.max_doc_freq < 1 || transformer.min_doc_freq > 0
-        high = round(Int, transformer.max_doc_freq * n)
-        low = round(Int, transformer.min_doc_freq * n)
-        new_dtm, vocab = limit_features(dtm_matrix, high, low)
-    else
-        new_dtm = dtm_matrix.dtm
-        vocab = dtm_matrix.terms
-    end
-
-    # calculate IDF
-    smooth_idf = Int(transformer.smooth_idf)
-    documents_containing_term = vec(sum(new_dtm .> 0, dims=2)) .+ smooth_idf
-    idf = log.((n + smooth_idf) ./ documents_containing_term) .+ 1
-
-    # prepare result
-    fitresult = TfidfTransformerResult(vocab, idf)
-    cache = nothing
-
-    return fitresult, cache, NamedTuple()
-end
+get_result(::TfidfTransformer, idf::Vector{Float64}, vocab::Vector{String}) = TfidfTransformerResult(vocab, idf)
 
 function build_tfidf!(dtm::SparseMatrixCSC{T},
                       tfidf::SparseMatrixCSC{F},
@@ -159,7 +62,7 @@ function build_tfidf!(dtm::SparseMatrixCSC{T},
     words_in_documents = F.(sum(dtm, dims=1))
     oneval = one(F)
 
-    for i = 1:n
+    @inbounds for i = 1:n
         for j in nzrange(dtm, i)
             row = rows[j]
             tfidfvals[j] = dtmvals[j] / max(words_in_documents[i], oneval) * idf_vector[row]
@@ -168,9 +71,6 @@ function build_tfidf!(dtm::SparseMatrixCSC{T},
 
     return tfidf
 end
-
-MMI.transform(transformer::TfidfTransformer, result::TfidfTransformerResult, v) = 
-    _transform(transformer, result, build_corpus(v))
 
 function _transform(::TfidfTransformer, 
                     result::TfidfTransformerResult,
@@ -202,8 +102,6 @@ MMI.metadata_pkg(TfidfTransformer,
              license="MIT",
              is_wrapper=false
 )
-
-const ScientificNGram{N} = NTuple{<:Any,STB.Textual}
 
 MMI.metadata_model(TfidfTransformer,
                input_scitype = Union{

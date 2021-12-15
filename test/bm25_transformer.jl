@@ -1,7 +1,7 @@
 using MLJBase
 using TextAnalysis
 
-@testset "tfidf transformer" begin
+@testset "bm25 transformer" begin
     # add some test docs
     docs = ["Hi my name is Sam.", "How are you today?"]
 
@@ -9,8 +9,8 @@ using TextAnalysis
     ngram_vec = ngrams.(documents(Corpus(NGramDocument.(docs))))
 
     # train transformer
-    tfidf_transformer = MLJText.TfidfTransformer()
-    test_machine = @test_logs machine(tfidf_transformer, ngram_vec)
+    bm25_transformer = MLJText.BM25Transformer()
+    test_machine = @test_logs machine(bm25_transformer, ngram_vec)
     MLJBase.fit!(test_machine)
 
     # test
@@ -49,8 +49,8 @@ using TextAnalysis
         "the cat" => 1
     )
     bag = Dict(Tuple(String.(split(k))) => v for (k, v) in bag_of_words)
-    tfidf_transformer2 = MLJText.TfidfTransformer()
-    test_machine2 = @test_logs machine(tfidf_transformer2, [bag])
+    bm25_transformer2 = MLJText.BM25Transformer()
+    test_machine2 = @test_logs machine(bm25_transformer2, [bag])
     MLJBase.fit!(test_machine2)
 
     test_doc5 = ["How about a cat in a hat"]
@@ -58,7 +58,6 @@ using TextAnalysis
     @test sum(test5, dims=2)[1] > 0.0
     @test size(test5) == (1, 8)
 
-    # test min/max features
     docs = [
         "the BIL opens the door to new possibilities and should raise our collective expectations",
         "about what we can achieve in the near term.",
@@ -68,11 +67,10 @@ using TextAnalysis
         "these stretch projects into shovel-worthy ones."
     ]
     ngram_vec = ngrams.(documents(Corpus(NGramDocument.(docs))))
-    tfidf_transformer3 = MLJText.TfidfTransformer(max_doc_freq=0.8, min_doc_freq=0.2)
-    test_machine3 = @test_logs machine(tfidf_transformer3, ngram_vec)
+    bm25_transformer3 = MLJText.BM25Transformer(max_doc_freq=0.8, min_doc_freq=0.2)
+    test_machine3 = @test_logs machine(bm25_transformer3, ngram_vec)
     MLJBase.fit!(test_machine3)
 
     test6 = transform(test_machine3, ngram_vec)
-    @test (Vector(vec(sum(blah, dims=2))) .> 0.2) == Bool[1, 1, 1, 1, 1, 1]
-
+    @test (Vector(vec(sum(blah, dims=2))) .> 0.8) == Bool[1, 1, 1, 1, 1, 1]
 end
