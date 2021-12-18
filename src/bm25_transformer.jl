@@ -1,36 +1,57 @@
 """
     BM25Transformer()
 
-    Convert a collection of raw documents to a matrix using the Okapi BM25 document-word statistic.
+Convert a collection of raw documents to a matrix using the Okapi BM25 document-word statistic.
 
-    BM25 is an approach similar to that of TF-IDF in terms of representing documents in a vector
-    space.  The BM25 scoring function uses both term frequency (TF) and inverse document frequency 
-    (IDF) so that, for each term in a document, its relative concentration in the document is
-    scored (like TF-IDF).  However, BM25 improves upon TF-IDF by incorporating probability - particularly,
-    the probability that a user will consider a search result relevant based on the terms in the search query
-    and those in each document.
+BM25 is an approach similar to that of TF-IDF in terms of representing documents in a vector
+space.  The BM25 scoring function uses both term frequency (TF) and inverse document frequency 
+(IDF) so that, for each term in a document, its relative concentration in the document is
+scored (like TF-IDF).  However, BM25 improves upon TF-IDF by incorporating probability - particularly,
+the probability that a user will consider a search result relevant based on the terms in the search query
+and those in each document.
 
-    The parameters `max_doc_freq`, `min_doc_freq`, and `smooth_idf` all work identically to those in the
-    `TfidfTransformer`.  BM25 introduces two additional parameters:
+The parameters `max_doc_freq`, `min_doc_freq`, and `smooth_idf` all work identically to those in the
+`TfidfTransformer`.  BM25 introduces two additional parameters:
 
-    `κ` is the term frequency saturation characteristic.  Higher values represent slower satuartion.  What 
-    we mean by saturation is the degree to which a term occuring extra times adds to the overall score.  This defaults
-    to 2.
+`κ` is the term frequency saturation characteristic.  Higher values represent slower saturation.  What 
+we mean by saturation is the degree to which a term occuring extra times adds to the overall score.  This defaults
+to 2.
 
-    `β` is a parameter, bound between 0 and 1, that amplifies the particular document length compared to the average length.
-    The bigger β is, the more document length is amplified in terms of the overall score.  The default value is 0.75.
+`β` is a parameter, bound between 0 and 1, that amplifies the particular document length compared to the average length.
+The bigger β is, the more document length is amplified in terms of the overall score.  The default value is 0.75.
 
-    For more explanations, please see:
-    http://ethen8181.github.io/machine-learning/search/bm25_intro.html
-    https://en.wikipedia.org/wiki/Okapi_BM25
-    https://nlp.stanford.edu/IR-book/html/htmledition/okapi-bm25-a-non-binary-model-1.html
+For more explanations, please see:
+http://ethen8181.github.io/machine-learning/search/bm25_intro.html
+https://en.wikipedia.org/wiki/Okapi_BM25
+https://nlp.stanford.edu/IR-book/html/htmledition/okapi-bm25-a-non-binary-model-1.html
+
+The parameters `max_doc_freq` and `min_doc_freq` restrict the vocabulary
+that the transformer will consider.  `max_doc_freq` indicates that terms in only
+up to the specified percentage of documents will be considered.  For example, if
+`max_doc_freq` is set to 0.9, terms that are in more than 90% of documents
+will be removed.  Similarly, the `min_doc_freq` parameter restricts terms in the
+other direction.  A value of 0.01 means that only terms that are at least in 1% of
+documents will be included.
 """
-MMI.@mlj_model mutable struct BM25Transformer <: AbstractTextTransformer
-    max_doc_freq::Float64 = 1.0
-    min_doc_freq::Float64 = 0.0
-    κ::Int=2
-    β::Float64=0.75
+mutable struct BM25Transformer <: AbstractTextTransformer
+    max_doc_freq::Float64
+    min_doc_freq::Float64
+    κ::Int
+    β::Float64
+    smooth_idf::Bool
+end
+
+function BM25Transformer(; 
+    max_doc_freq::Float64 = 1.0,
+    min_doc_freq::Float64 = 0.0,
+    κ::Int=2,
+    β::Float64=0.75,
     smooth_idf::Bool = true
+    )    
+    transformer = BM25Transformer(max_doc_freq, min_doc_freq, κ, β, smooth_idf)
+    message = MMI.clean!(transformer)
+    isempty(message) || @warn message
+    return transformer
 end
 
 struct BMI25TransformerResult

@@ -24,6 +24,6 @@ include("tfidf_transformer.jl")
 include("bagofwords_transformer.jl")
 include("bm25_transformer.jl")
 
-export TfidfTransformer
+export TfidfTransformer, BM25Transformer, BagOfWordsTransformer
 
 end # module
