@@ -28,7 +28,7 @@ using TextAnalysis
     # test single doc
     test_doc1 = ngrams(NGramDocument("Another sentence ok"))
     for mach = test_machines
-        test_doc_transform = transform(mach, [test_doc])
+        test_doc_transform = transform(mach, [test_doc1])
         @test sum(test_doc_transform, dims=2)[1] == 0.0
         @test size(test_doc_transform) == (1, 11)
     end
