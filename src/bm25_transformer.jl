@@ -21,9 +21,9 @@ to 2.
 The bigger β is, the more document length is amplified in terms of the overall score.  The default value is 0.75.
 
 For more explanations, please see:
-http://ethen8181.github.io/machine-learning/search/bm25_intro.html
-https://en.wikipedia.org/wiki/Okapi_BM25
-https://nlp.stanford.edu/IR-book/html/htmledition/okapi-bm25-a-non-binary-model-1.html
+- http://ethen8181.github.io/machine-learning/search/bm25_intro.html
+- https://en.wikipedia.org/wiki/Okapi_BM25
+- https://nlp.stanford.edu/IR-book/html/htmledition/okapi-bm25-a-non-binary-model-1.html
 
 The parameters `max_doc_freq` and `min_doc_freq` restrict the vocabulary
 that the transformer will consider.  `max_doc_freq` indicates that terms in only
@@ -81,8 +81,8 @@ function build_bm25!(doc_term_mat::SparseMatrixCSC{T},
     p, n = size(doc_term_mat)
 
     # TF tells us what proportion of a document is defined by a term
-    words_in_documents = F.(sum(doc_term_mat, dims=1))
-    ln = words_in_documents./mean(words_in_documents)
+    words_in_documents = F.(sum(doc_term_mat; dims=1))
+    ln = words_in_documents ./ mean(words_in_documents)
     oneval = one(F)
 
     for i = 1:n

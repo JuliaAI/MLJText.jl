@@ -62,22 +62,22 @@ end
 
 get_result(::TfidfTransformer, idf::Vector{Float64}, vocab::Vector{String}) = TfidfTransformerResult(vocab, idf)
 
-function build_tfidf!(dtm::SparseMatrixCSC{T},
+function build_tfidf!(doc_term_mat::SparseMatrixCSC{T},
                       tfidf::SparseMatrixCSC{F},
                       idf_vector::Vector{F}) where {T <: Real, F <: AbstractFloat}
-    rows = rowvals(dtm)
-    dtmvals = nonzeros(dtm)
+    rows = rowvals(doc_term_mat)
+    dtmvals = nonzeros(doc_term_mat)
     tfidfvals = nonzeros(tfidf)
     @assert size(dtmvals) == size(tfidfvals)
 
-    p, n = size(dtm)
+    p, n = size(doc_term_mat)
 
     # TF tells us what proportion of a document is defined by a term
-    words_in_documents = F.(sum(dtm, dims=1))
+    words_in_documents = F.(sum(doc_term_mat; dims=1))
     oneval = one(F)
 
     @inbounds for i = 1:n
-        for j in nzrange(dtm, i)
+        for j in nzrange(doc_term_mat, i)
             row = rows[j]
             tfidfvals[j] = dtmvals[j] / max(words_in_documents[i], oneval) * idf_vector[row]
         end
