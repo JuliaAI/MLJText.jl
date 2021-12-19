@@ -17,7 +17,7 @@ Currently, we have a TF-IDF Transformer which converts a collection of raw docum
 
 The goal of using TF-IDF instead of the raw frequencies of occurrence of a token in a given document is to scale down the impact of tokens that occur very frequently in a given corpus and that are hence empirically less informative than features that occur in a small fraction of the training corpus.
 
-### Uses
+### Usage
 The TF-IDF Transformer accepts a variety of inputs for the raw documents that one wishes to convert into a TF-IDF matrix.
 
 Raw documents can simply be provided as tokenized documents.
@@ -57,7 +57,7 @@ tfidf_mat = transform(mach, ngram_docs)
 ## BM25 Transformer
 BM25 is an approach similar to that of TF-IDF in terms of representing documents in a vector space.  The BM25 scoring function uses both term frequency (TF) and inverse document frequency (IDF) so that, for each term in a document, its relative concentration in the document is scored (like TF-IDF).  However, BM25 improves upon TF-IDF by incorporating probability - particularly, the probability that a user will consider a search result relevant based on the terms in the search query and those in each document.
 
-### Uses
+### Usage
 This transformer is used in much the same way as the `TfidfTransformer`.
 
 ```julia
@@ -92,7 +92,7 @@ Please see [http://ethen8181.github.io/machine-learning/search/bm25_intro.html](
 ## Bag-of-Words Transformer
 The `MLJText` package also offers a way to represent documents using the simpler bag-of-words representation.  This returns a document-term matrix (as you would get in `TextAnalysis`) that consists of the count for every word in the corpus for each document in the corpus.
 
-### Uses
+### Usage
 ```julia
 using MLJ, MLJText, TextAnalysis
 
