@@ -10,7 +10,7 @@ extension providing tools and models for text analysis.
 
 The goal of this package is to provide an interface to various Natural Language Processing (NLP) resources for `MLJ` via such existing packages like [TextAnalysis](https://github.com/JuliaText/TextAnalysis.jl)
 
-Currently, we have a TF-IDF Transformer which converts a collection of raw documents into a TF-IDF matrix.  We also have a similar way of representing documents using the Okapi Best Match 25 algorithm - this works in a similar fashion to TF-IDF but introduces the probability that a term is relevant in a particular document.  See more here: [Okapi BM25](https://en.wikipedia.org/wiki/Okapi_BM25).  Finally, there is also a simple Bag-of-Word representation available.
+Currently, we have a TF-IDF Transformer which converts a collection of raw documents into a TF-IDF matrix. We also have a similar way of representing documents using the Okapi Best Match 25 algorithm - this works in a similar fashion to TF-IDF but introduces the probability that a term is relevant in a particular document.  See [Okapi BM25](https://en.wikipedia.org/wiki/Okapi_BM25). Finally, there is also a simple Bag-of-Word representation available.
 
 ## TF-IDF Transformer
 "TF" means term-frequency while "TF-IDF" means term-frequency times inverse document-frequency.  This is a common term weighting scheme in information retrieval, that has also found good use in document classification.
