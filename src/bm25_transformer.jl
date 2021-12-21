@@ -14,7 +14,7 @@ The parameters `max_doc_freq`, `min_doc_freq`, and `smooth_idf` all work identic
 `TfidfTransformer`. BM25 introduces two additional parameters:
 
 `κ` is the term frequency saturation characteristic. Higher values represent slower saturation. What 
-we mean by saturation is the degree to which a term occuring extra times adds to the overall score.  This defaults
+we mean by saturation is the degree to which a term occuring extra times adds to the overall score. This defaults
 to 2.
 
 `β` is a parameter, bound between 0 and 1, that amplifies the particular document length compared to the average length.
