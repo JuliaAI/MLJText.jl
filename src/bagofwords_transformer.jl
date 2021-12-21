@@ -4,21 +4,21 @@
 Convert a collection of raw documents to matrix representing a bag-of-words structure.
 
 Essentially, a bag-of-words approach to representing documents in a matrix is comprised of
-a count of every word in the document corpus/collection for every document.  This is a simple
-but often quite powerful way of representing documents as vectors.  The end representation is
+a count of every word in the document corpus/collection for every document. This is a simple
+but often quite powerful way of representing documents as vectors. The resulting representation is
 a matrix with rows representing every document in the corpus and columns representing every word
-in the corpus.  The value for each cell is the raw count of a particular word in a particular
+in the corpus. The value for each cell is the raw count of a particular word in a particular
 document.
 
 Similarly to the `TfidfTransformer`, the vocabulary considered can be restricted
 to words occuring in a maximum or minimum portion of documents.
 
 The parameters `max_doc_freq` and `min_doc_freq` restrict the vocabulary
-that the transformer will consider.  `max_doc_freq` indicates that terms in only
-up to the specified percentage of documents will be considered.  For example, if
+that the transformer will consider. `max_doc_freq` indicates that terms in only
+up to the specified percentage of documents will be considered. For example, if
 `max_doc_freq` is set to 0.9, terms that are in more than 90% of documents
-will be removed.  Similarly, the `min_doc_freq` parameter restricts terms in the
-other direction.  A value of 0.01 means that only terms that are at least in 1% of
+will be removed. Similarly, the `min_doc_freq` parameter restricts terms in the
+other direction. A value of 0.01 means that only terms that are at least in 1% of
 documents will be included.
 """
 mutable struct BagOfWordsTransformer <: AbstractTextTransformer
