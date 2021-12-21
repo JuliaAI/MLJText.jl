@@ -90,7 +90,7 @@ BM25Transformer(
 Please see [http://ethen8181.github.io/machine-learning/search/bm25_intro.html](http://ethen8181.github.io/machine-learning/search/bm25_intro.html) for more details about how these parameters affect the matrix that is generated.
 
 ## Bag-of-Words Transformer
-The `MLJText` package also offers a way to represent documents using the simpler bag-of-words representation.  This returns a document-term matrix (as you would get in `TextAnalysis`) that consists of the count for every word in the corpus for each document in the corpus.
+The `MLJText` package also offers a way to represent documents using the simpler bag-of-words representation. This returns a document-term matrix (as you would get in `TextAnalysis`) that consists of the count for every word in the corpus for each document in the corpus.
 
 ### Usage
 ```julia
