@@ -6,7 +6,7 @@ Convert a collection of raw documents to a matrix using the Okapi BM25 document-
 BM25 is an approach similar to that of TF-IDF in terms of representing documents in a vector
 space.  The BM25 scoring function uses both term frequency (TF) and inverse document frequency 
 (IDF) so that, for each term in a document, its relative concentration in the document is
-scored (like TF-IDF).  However, BM25 improves upon TF-IDF by incorporating probability - particularly,
+scored (like TF-IDF). However, BM25 improves upon TF-IDF by incorporating probability - particularly,
 the probability that a user will consider a search result relevant based on the terms in the search query
 and those in each document.
 
