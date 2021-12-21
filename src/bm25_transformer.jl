@@ -18,7 +18,7 @@ we mean by saturation is the degree to which a term occuring extra times adds to
 to 2.
 
 `β` is a parameter, bound between 0 and 1, that amplifies the particular document length compared to the average length.
-The bigger β is, the more document length is amplified in terms of the overall score.  The default value is 0.75.
+The bigger β is, the more document length is amplified in terms of the overall score. The default value is 0.75.
 
 For more explanations, please see:
 - http://ethen8181.github.io/machine-learning/search/bm25_intro.html
