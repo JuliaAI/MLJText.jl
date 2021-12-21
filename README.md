@@ -40,7 +40,7 @@ The resulting matrix looks like:
  0.0       0.281093  0.0       0.281093  0.0       0.281093  0.0       0.0       0.0       0.281093  0.281093
 ```
 
-Functionality similar to Scikit-Learn's implementation with N-Grams can easily be implemented using features from `TextAnalysis`.  Then the N-Grams themselves (either as a dictionary of Strings or dictionary of Tuples) can be passed into the transformer.  We will likely introduce an additional transformer to handle these types of conversions in a future update to `MLJText`.
+Functionality similar to Scikit-Learn's implementation with N-Grams can easily be implemented using features from `TextAnalysis`. Then the N-Grams themselves (either as a dictionary of Strings or dictionary of Tuples) can be passed into the transformer. We will likely introduce an additional transformer to handle these types of conversions in a future update to `MLJText`.
 ```julia
 
 # this will create unigrams and bigrams
