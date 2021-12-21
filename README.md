@@ -13,7 +13,7 @@ The goal of this package is to provide an interface to various Natural Language 
 Currently, we have a TF-IDF Transformer which converts a collection of raw documents into a TF-IDF matrix. We also have a similar way of representing documents using the Okapi Best Match 25 algorithm - this works in a similar fashion to TF-IDF but introduces the probability that a term is relevant in a particular document.  See [Okapi BM25](https://en.wikipedia.org/wiki/Okapi_BM25). Finally, there is also a simple Bag-of-Word representation available.
 
 ## TF-IDF Transformer
-"TF" means term-frequency while "TF-IDF" means term-frequency times inverse document-frequency.  This is a common term weighting scheme in information retrieval, that has also found good use in document classification.
+"TF" means term-frequency while "TF-IDF" means term-frequency times inverse document-frequency. This is a common term weighting scheme in information retrieval, that has also found good use in document classification.
 
 The goal of using TF-IDF instead of the raw frequencies of occurrence of a token in a given document is to scale down the impact of tokens that occur very frequently in a given corpus and that are hence empirically less informative than features that occur in a small fraction of the training corpus.
 
