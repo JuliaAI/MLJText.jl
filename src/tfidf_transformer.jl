@@ -35,7 +35,7 @@ containing every term in the collection exactly once, which prevents
 zero divisions: `idf(t) = log [ (1 + n) / (1 + df(t)) ] + 1`.
 
 The parameters `max_doc_freq` and `min_doc_freq` restrict the vocabulary
-that the transformer will consider.  `max_doc_freq` indicates that terms in only
+that the transformer will consider. `max_doc_freq` indicates that terms in only
 up to the specified percentage of documents will be considered.  For example, if
 `max_doc_freq` is set to 0.9, terms that are in more than 90% of documents
 will be removed.  Similarly, the `min_doc_freq` parameter restricts terms in the
