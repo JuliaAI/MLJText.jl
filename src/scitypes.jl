@@ -21,13 +21,13 @@ STB.scitype(::AbstractDict{<:CL.TaggedWord,<:Integer},
 STB.scitype(::AbstractDict{<:Union{CL.TaggedWord,AbstractString},<:Integer},
            ::DefaultConvention) =
                Multiset{Union{Textual,Annotated{Textual}}}
-STB.scitype(::AbstractDict{<:PlainNGram{N}}) where N =
+STB.scitype(::AbstractDict{<:PlainNGram{N}}, ::DefaultConvention) where N =
     Multiset{NTuple{N,Textual}}
-STB.scitype(::AbstractDict{<:TaggedNGram{N}}) where N =
+STB.scitype(::AbstractDict{<:TaggedNGram{N}}, ::DefaultConvention) where N =
     Multiset{NTuple{N,Annotated{Textual}}}
-STB.scitype(::AbstractDict{<:PlainNGram}) =
+STB.scitype(::AbstractDict{<:PlainNGram}, ::DefaultConvention) =
     Multiset{NTuple{<:Any,Textual}}
-STB.scitype(::AbstractDict{<:TaggedNGram}) =
+STB.scitype(::AbstractDict{<:TaggedNGram}, ::DefaultConvention) =
     Multiset{NTuple{<:Any,Annotated{Textual}}}
 
 STB.Scitype(::Type{<:CL.TaggedWord}, ::DefaultConvention) =
