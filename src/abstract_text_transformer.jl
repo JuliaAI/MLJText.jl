@@ -44,7 +44,7 @@ function _fit(transformer::AbstractTextTransformer, verbosity::Int, X::Corpus)
     idf = compute_idf(transformer.smooth_idf, new_dtm)
 
     # prepare result
-    fitresult = get_result(transformer, idf, vocab)
+    fitresult = get_result(transformer, idf, vocab, new_dtm)
     cache = nothing
 
     return fitresult, cache, NamedTuple()

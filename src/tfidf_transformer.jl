@@ -60,7 +60,8 @@ struct TfidfTransformerResult
     idf_vector::Vector{Float64}
 end
 
-get_result(::TfidfTransformer, idf::Vector{Float64}, vocab::Vector{String}) = TfidfTransformerResult(vocab, idf)
+get_result(::TfidfTransformer, idf::Vector{<:AbstractFloat}, vocab::Vector{String}, ::SparseMatrixCSC) = 
+    TfidfTransformerResult(vocab, idf)
 
 function build_tfidf!(doc_term_mat::SparseMatrixCSC{T},
                       tfidf::SparseMatrixCSC{F},
