@@ -1,7 +1,7 @@
-function limit_features(doc_term_matrix::DocumentTermMatrix,
+function limit_features(doc_terms::DocumentTermMatrix,
                         high::Int,
                         low::Int)
-    doc_freqs = vec(sum(doc_term_matrix.dtm, dims=2))
+    doc_freqs = vec(sum(doc_terms.dtm, dims=2))
 
     # build mask to restrict terms
     mask = trues(length(doc_freqs))
@@ -12,9 +12,9 @@ function limit_features(doc_term_matrix::DocumentTermMatrix,
         mask .&= (doc_freqs .>= low)
     end
 
-    new_terms = doc_term_matrix.terms[mask]
+    new_terms = doc_terms.terms[mask]
 
-    return (doc_term_matrix.dtm[mask, :], new_terms)
+    return (doc_terms.dtm[mask, :], new_terms)
 end
 
 ## Helper functions to build Corpus ##
@@ -55,11 +55,11 @@ function build_dtm(docs::Corpus, terms::Vector{T}) where {T}
         end
     end
     if length(rows) > 0
-        doc_term_matrix = sparse(rows, columns, values, m, n)
+        doc_term_mat = sparse(rows, columns, values, m, n)
     else
-        doc_term_matrix = spzeros(Int, m, n)
+        doc_term_mat = spzeros(Int, m, n)
     end
-    DocumentTermMatrix(doc_term_matrix, terms, row_indices)
+    DocumentTermMatrix(doc_term_mat, terms, row_indices)
 end
 
 ## General method to calculate IDF vector ##

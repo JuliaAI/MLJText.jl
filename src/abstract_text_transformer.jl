@@ -34,17 +34,17 @@ function _fit(transformer::AbstractTextTransformer, verbosity::Int, X::Corpus)
     if transformer.max_doc_freq < 1 || transformer.min_doc_freq > 0
         high = round(Int, transformer.max_doc_freq * n)
         low = round(Int, transformer.min_doc_freq * n)
-        new_dtm, vocab = limit_features(dtm_matrix, high, low)
+        new_doc_term_mat, vocab = limit_features(dtm_matrix, high, low)
     else
-        new_dtm = dtm_matrix.dtm
+        new_doc_term_mat = dtm_matrix.dtm
         vocab = dtm_matrix.terms
     end
 
     # calculate IDF
-    idf = compute_idf(transformer.smooth_idf, new_dtm)
+    idf = compute_idf(transformer.smooth_idf, new_doc_term_mat)
 
     # prepare result
-    fitresult = get_result(transformer, idf, vocab)
+    fitresult = get_result(transformer, idf, vocab, new_doc_term_mat)
     cache = nothing
 
     return fitresult, cache, NamedTuple()
