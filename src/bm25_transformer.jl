@@ -57,16 +57,22 @@ end
 struct BMI25TransformerResult
     vocab::Vector{String}
     idf_vector::Vector{Float64}
+    mean_words_in_docs::Float64
 end
 
-get_result(::BM25Transformer, idf::Vector{Float64}, vocab::Vector{String}) = BMI25TransformerResult(vocab, idf)
+function get_result(::BM25Transformer, idf::Vector{F}, vocab::Vector{String}, doc_term_mat::SparseMatrixCSC) where {F <: AbstractFloat}
+    words_in_documents = F.(sum(doc_term_mat; dims=1))
+    mean_words_in_docs = mean(words_in_documents)
+    BMI25TransformerResult(vocab, idf, mean_words_in_docs)
+end
 
 # BM25: Okapi Best Match 25
 # Details at: https://en.wikipedia.org/wiki/Okapi_BM25
 # derived from https://github.com/zgornel/StringAnalysis.jl/blob/master/src/stats.jl
 function build_bm25!(doc_term_mat::SparseMatrixCSC{T},
                     bm25::SparseMatrixCSC{F},
-                    idf_vector::Vector{F};
+                    idf_vector::Vector{F},
+                    mean_words_in_docs::Float64;
                     κ::Int=2,
                     β::Float64=0.75) where {T <: Real, F <: AbstractFloat}
     @assert size(doc_term_mat) == size(bm25)
@@ -82,7 +88,7 @@ function build_bm25!(doc_term_mat::SparseMatrixCSC{T},
 
     # TF tells us what proportion of a document is defined by a term
     words_in_documents = F.(sum(doc_term_mat; dims=1))
-    ln = words_in_documents ./ mean(words_in_documents)
+    ln = words_in_documents ./ mean_words_in_docs
     oneval = one(F)
 
     for i = 1:n
@@ -100,9 +106,9 @@ end
 function _transform(transformer::BM25Transformer, 
                     result::BMI25TransformerResult,
                     v::Corpus)
-    dtm_matrix = build_dtm(v, result.vocab)
-    bm25 = similar(dtm_matrix.dtm, eltype(result.idf_vector))
-    build_bm25!(dtm_matrix.dtm, bm25, result.idf_vector; κ=transformer.κ, β=transformer.β)
+    doc_terms = build_dtm(v, result.vocab)
+    bm25 = similar(doc_terms.dtm, eltype(result.idf_vector))
+    build_bm25!(doc_terms.dtm, bm25, result.idf_vector, result.mean_words_in_docs; κ=transformer.κ, β=transformer.β)
 
     # here we return the `adjoint` of our sparse matrix to conform to 
     # the `n x p` dimensions throughout MLJ
@@ -113,7 +119,8 @@ end
 function MMI.fitted_params(::BM25Transformer, fitresult)
     vocab = fitresult.vocab
     idf_vector = fitresult.idf_vector
-    return (vocab = vocab, idf_vector = idf_vector)
+    mean_words_in_docs = fitresult.mean_words_in_docs
+    return (vocab = vocab, idf_vector = idf_vector, mean_words_in_docs = mean_words_in_docs)
 end
 
 

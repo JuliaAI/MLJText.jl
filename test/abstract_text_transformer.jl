@@ -60,6 +60,16 @@ using TextAnalysis
         @test sum(test_doc_transform, dims=2)[2] > 0.0
         @test size(test_doc_transform) == (2, 11)
     end
+
+    # test proper fit:
+    # here we are testing to make sure the size of the corpus to be
+    # transformed does not alter the transformation that the model
+    # is doing.
+    for mach = test_machines
+        single_doc_transform = transform(mach, [test_doc2])
+        multiple_doc_transform = transform(mach, [test_doc2, test_doc2])
+        @test single_doc_transform[1, :] == multiple_doc_transform[1, :]
+    end
 end
 
 @testset "bag of words use" begin
