@@ -90,9 +90,9 @@ end
 function _transform(::TfidfTransformer, 
                     result::TfidfTransformerResult,
                     v::Corpus)
-    dtm_matrix = build_dtm(v, result.vocab)
-    tfidf = similar(dtm_matrix.dtm, eltype(result.idf_vector))
-    build_tfidf!(dtm_matrix.dtm, tfidf, result.idf_vector)
+    doc_terms = build_dtm(v, result.vocab)
+    tfidf = similar(doc_terms.dtm, eltype(result.idf_vector))
+    build_tfidf!(doc_terms.dtm, tfidf, result.idf_vector)
 
     # here we return the `adjoint` of our sparse matrix to conform to 
     # the `n x p` dimensions throughout MLJ

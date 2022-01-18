@@ -106,9 +106,9 @@ end
 function _transform(transformer::BM25Transformer, 
                     result::BMI25TransformerResult,
                     v::Corpus)
-    dtm_matrix = build_dtm(v, result.vocab)
-    bm25 = similar(dtm_matrix.dtm, eltype(result.idf_vector))
-    build_bm25!(dtm_matrix.dtm, bm25, result.idf_vector, result.mean_words_in_docs; κ=transformer.κ, β=transformer.β)
+    doc_terms = build_dtm(v, result.vocab)
+    bm25 = similar(doc_terms.dtm, eltype(result.idf_vector))
+    build_bm25!(doc_terms.dtm, bm25, result.idf_vector, result.mean_words_in_docs; κ=transformer.κ, β=transformer.β)
 
     # here we return the `adjoint` of our sparse matrix to conform to 
     # the `n x p` dimensions throughout MLJ

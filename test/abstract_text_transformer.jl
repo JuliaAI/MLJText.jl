@@ -13,17 +13,17 @@ using TextAnalysis
     test_tfidf_machine = @test_logs machine(tfidf_transformer, ngram_vec)
     MLJBase.fit!(test_tfidf_machine)
 
-    # train bag_of_words transformer
-    bagofwords_vectorizer = MLJText.BagOfWordsTransformer()
-    test_bow_machine = @test_logs machine(bagofwords_vectorizer, ngram_vec)
-    MLJBase.fit!(test_bow_machine)
+    # train count transformer
+    count_transformer = MLJText.CountTransformer()
+    test_count_machine = @test_logs machine(count_transformer, ngram_vec)
+    MLJBase.fit!(test_count_machine)
 
     # train bm25 transformer
     bm25_transformer = MLJText.BM25Transformer()
     test_bm25_machine = @test_logs machine(bm25_transformer, ngram_vec)
     MLJBase.fit!(test_bm25_machine)
 
-    test_machines = [test_tfidf_machine, test_bow_machine, test_bm25_machine]
+    test_machines = [test_tfidf_machine, test_count_machine, test_bm25_machine]
 
     # test single doc
     test_doc1 = ngrams(NGramDocument("Another sentence ok"))
@@ -60,6 +60,16 @@ using TextAnalysis
         @test sum(test_doc_transform, dims=2)[2] > 0.0
         @test size(test_doc_transform) == (2, 11)
     end
+
+    # test proper fit:
+    # here we are testing to make sure the size of the corpus to be
+    # transformed does not alter the transformation that the model
+    # is doing.
+    for mach = test_machines
+        single_doc_transform = transform(mach, [test_doc2])
+        multiple_doc_transform = transform(mach, [test_doc2, test_doc2])
+        @test single_doc_transform[1, :] == multiple_doc_transform[1, :]
+    end
 end
 
 @testset "bag of words use" begin
@@ -81,10 +91,10 @@ end
     test_tfidf_machine2 = @test_logs machine(tfidf_transformer, [bag])
     MLJBase.fit!(test_tfidf_machine2)
 
-    # train bag_of_words transformer
-    bagofwords_vectorizer = MLJText.BagOfWordsTransformer()
-    test_bow_machine2 = @test_logs machine(bagofwords_vectorizer, [bag])
-    MLJBase.fit!(test_bow_machine2)
+    # train count transformer
+    count_transformer = MLJText.CountTransformer()
+    test_count_machine2 = @test_logs machine(count_transformer, [bag])
+    MLJBase.fit!(test_count_machine2)
 
     # train bm25 transformer
     bm25_transformer = MLJText.BM25Transformer()
@@ -92,7 +102,7 @@ end
     MLJBase.fit!(test_bm25_machine2)
 
     test_doc5 = ["How about a cat in a hat"]
-    for mach = [test_tfidf_machine2, test_bow_machine2, test_bm25_machine2]
+    for mach = [test_tfidf_machine2, test_count_machine2, test_bm25_machine2]
         test_doc_transform = transform(mach, test_doc5)
         @test sum(test_doc_transform, dims=2)[1] > 0.0
         @test size(test_doc_transform) == (1, 8)
@@ -117,9 +127,9 @@ end
     MLJBase.fit!(test_tfidf_machine3)
 
     # train bag_of_words transformer
-    bagofwords_vectorizer = MLJText.BagOfWordsTransformer(max_doc_freq=0.8)
-    test_bow_machine3 = @test_logs machine(bagofwords_vectorizer, ngram_vec)
-    MLJBase.fit!(test_bow_machine3)
+    count_transformer = MLJText.CountTransformer(max_doc_freq=0.8)
+    test_count_machine3 = @test_logs machine(count_transformer, ngram_vec)
+    MLJBase.fit!(test_count_machine3)
 
     # train bm25 transformer
     bm25_transformer = MLJText.BM25Transformer(max_doc_freq=0.8, min_doc_freq=0.2)
@@ -130,7 +140,7 @@ end
     test_doc_transform = transform(test_tfidf_machine3, ngram_vec)
     @test (Vector(vec(sum(test_doc_transform, dims=2))) .> 0.2) == Bool[1, 1, 1, 1, 1, 1]
 
-    test_doc_transform = transform(test_bow_machine3, ngram_vec)
+    test_doc_transform = transform(test_count_machine3, ngram_vec)
     @test Vector(vec(sum(test_doc_transform, dims=2))) == [14, 10, 14, 9, 13, 7]
 
     test_doc_transform = transform(test_bm25_machine3, ngram_vec)
