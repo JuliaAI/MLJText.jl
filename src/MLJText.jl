@@ -21,9 +21,9 @@ include("scitypes.jl")
 include("utils.jl")
 include("abstract_text_transformer.jl")
 include("tfidf_transformer.jl")
-include("count_transformer.jl")
+include("bagofwords_transformer.jl")
 include("bm25_transformer.jl")
 
-export TfidfTransformer, BM25Transformer, CountTransformer
+export TfidfTransformer, BM25Transformer, BagOfWordsTransformer
 
 end # module
