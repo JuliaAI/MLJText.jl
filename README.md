@@ -89,7 +89,7 @@ BM25Transformer(
 ```
 Please see [http://ethen8181.github.io/machine-learning/search/bm25_intro.html](http://ethen8181.github.io/machine-learning/search/bm25_intro.html) for more details about how these parameters affect the matrix that is generated.
 
-## Bag-of-Words Transformer
+## Count Transformer
 The `MLJText` package also offers a way to represent documents using the simpler bag-of-words representation. This returns a document-term matrix (as you would get in `TextAnalysis`) that consists of the count for every word in the corpus for each document in the corpus.
 
 ### Usage
@@ -97,11 +97,11 @@ The `MLJText` package also offers a way to represent documents using the simpler
 using MLJ, MLJText, TextAnalysis
 
 docs = ["Hi my name is Sam.", "How are you today?"]
-bagofwords_transformer = BagOfWordsTransformer()
-mach = machine(bagofwords_transformer, tokenize.(docs))
+count_transformer = CountTransformer()
+mach = machine(count_transformer, tokenize.(docs))
 MLJ.fit!(mach)
 
-bagofwords_mat = transform(mach, tokenize.(docs))
+count_mat = transform(mach, tokenize.(docs))
 ```
 
 The resulting matrix looks like:
