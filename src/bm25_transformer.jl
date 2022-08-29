@@ -10,14 +10,11 @@ upon TF-IDF by incorporating probability - particularly, the probability that a 
 consider a search result relevant based on the terms in the search query and those in each
 document.
 
-
-
 # Training data
-
 
 In MLJ or MLJBase, bind an instance `model` to data with
 
-mach = machine(model, X)
+    mach = machine(model, X)
 
 Where
 
@@ -28,9 +25,7 @@ Where
 
 Train the machine using `fit!(mach, rows=...)`.
 
-
 # Hyper-parameters
-
 
 - `max_doc_freq=1.0`: Restricts the vocabulary that the transformer will consider.
   Terms that occur in `> max_doc_freq` documents will not be considered by the
@@ -54,16 +49,12 @@ Train the machine using `fit!(mach, rows=...)`.
   These `1`'s have the same affect as adding an extra document which contains every term
   in the collection exactly once, preventing division by 0.
 
-
 # Operations
-
 
 - `transform(mach, Xnew)`: Return a transformed matrix of type
   `ScientificTypesBase.Continuous` given new features `Xnew`.
 
-
 # Fitted parameters
-
 
 The fields of `fitted_params(mach)` are:
 
@@ -71,9 +62,7 @@ The fields of `fitted_params(mach)` are:
 - `idf_vector`: The transformer's calculated IDF vector.
 - `mean_words_in_docs`: The mean number of words in each document.
 
-
 # Examples
-
 
 `BM25Transformer` accepts a variety of inputs. In the example below, we use simple
 tokenized documents:
@@ -106,12 +95,11 @@ mach = machine(bm25_transformer, ngram_docs)
 MLJ.fit!(mach)
 fitted_params(mach)
 
-tfidf_mat = transform(mach, ngram_docs)
+bm25_mat = transform(mach, ngram_docs)
 ```
 
 See also
-[`GaussianNBClassifier`](@ref)
-
+[`TfidfTransformer`](@ref), [`CountTransformer`](@ref)
 """
 mutable struct BM25Transformer <: AbstractTextTransformer
     max_doc_freq::Float64

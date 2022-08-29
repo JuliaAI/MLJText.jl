@@ -1,7 +1,6 @@
 """
 $(MMI.doc_header(TfidfTransformer))
 
-
 `TfidfTransformer`: Convert a collection of raw documents to a matrix of TF-IDF features.
 "TF" means term-frequency while "TF-IDF" means term-frequency times inverse
 document-frequency.  This is a common term weighting scheme in information retrieval, that
@@ -12,13 +11,11 @@ informative than features that occur in a small fraction of the training corpus.
 that is used to compute the TF-IDF for a term `t` of a document `d` in a document set is
 `tf_idf(t, d) = tf(t, d) * idf(t)`.
 
-
 # Training data
-
 
 In MLJ or MLJBase, bind an instance `model` to data with
 
-mach = machine(model, X)
+    mach = machine(model, X)
 
 Where
 
@@ -29,9 +26,7 @@ Where
 
 Train the machine using `fit!(mach, rows=...)`.
 
-
 # Hyper-parameters
-
 
 - `max_doc_freq=1.0`: Restricts the vocabulary that the transformer will consider.
   Terms that occur in `> max_doc_freq` documents will not be considered by the
@@ -49,25 +44,19 @@ Train the machine using `fit!(mach, rows=...)`.
   These `1`'s have the same affect as adding an extra document which contains every term
   in the collection exactly once, preventing division by 0.
 
-
 # Operations
-
 
 - `transform(mach, Xnew)`: Return a transformed matrix of scitype
   `Continuous` given new features `Xnew`.
 
-
 # Fitted parameters
-
 
 The fields of `fitted_params(mach)` are:
 
 - `vocab`: A vector containing the string used in the transformer's vocabulary.
 - `idf_vector`: The transformer's calculated IDF vector.
 
-
 # Examples
-
 
 `TfidfTransformer` accepts a variety of inputs. In the example below, we use simple
 tokenized documents:
@@ -104,8 +93,7 @@ tfidf_mat = transform(mach, ngram_docs)
 ```
 
 See also
-[`GaussianNBClassifier`](@ref)
-
+[`CountTransformer`](@ref), [`BM25Transformer`](@ref)
 """
 mutable struct TfidfTransformer <: AbstractTextTransformer
     max_doc_freq::Float64

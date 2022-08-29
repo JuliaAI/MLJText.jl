@@ -27,7 +27,6 @@ Train the machine using `fit!(mach, rows=...)`.
 
 # Hyper-parameters
 
-
 - `max_doc_freq=1.0`: Restricts the vocabulary that the transformer will consider.
   Terms that occur in `> max_doc_freq` documents will not be considered by the
   transformer. For example, if `max_doc_freq` is set to 0.9, terms that are in more than
@@ -36,7 +35,6 @@ Train the machine using `fit!(mach, rows=...)`.
   Terms that occur in `< max_doc_freq` documents will not be considered by the
   transformer. A value of 0.01 means that only terms that are at least in 1% of the
   documents will be included.
-
 
 # Operations
 
@@ -86,7 +84,7 @@ count_mat = transform(mach, ngram_docs)
 ```
 
 See also
-[`GaussianNBClassifier`](@ref)
+[`TfidfTransformer`](@ref), [`BM25Transformer`](@ref)
 """
 mutable struct CountTransformer <: AbstractTextTransformer
     max_doc_freq::Float64
