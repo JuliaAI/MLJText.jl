@@ -1,106 +1,3 @@
-"""
-$(MMI.doc_header(BM25Transformer))
-
-`BM25Transformer`: Convert a collection of raw documents to a matrix using the Okapi BM25
-document-word statistic. BM25 is an approach similar to that of TF-IDF in terms of
-representing documents in a vector space.  The BM25 scoring function uses both term
-frequency (TF) and inverse document frequency (IDF) so that, for each term in a document,
-its relative concentration in the document is scored (like TF-IDF). However, BM25 improves
-upon TF-IDF by incorporating probability - particularly, the probability that a user will
-consider a search result relevant based on the terms in the search query and those in each
-document.
-
-# Training data
-
-In MLJ or MLJBase, bind an instance `model` to data with
-
-    mach = machine(model, X)
-
-Where
-
-- `X`: is any matrix of input features whose items are of scitype
-  `ScientificTypesBase.Textual`, `ScientificTypesBase.{Multiset{<:ScientificNGram}}`, or
-  `ScientificTypesBase.Multiset{.ScientificTypesBase.Textual}`; check the scitype with
-  `schema(X)`
-
-Train the machine using `fit!(mach, rows=...)`.
-
-# Hyper-parameters
-
-- `max_doc_freq=1.0`: Restricts the vocabulary that the transformer will consider.
-  Terms that occur in `> max_doc_freq` documents will not be considered by the
-  transformer. For example, if `max_doc_freq` is set to 0.9, terms that are in more than
-  90% of the documents will be removed.
-- `min_doc_freq=0.0`: Restricts the vocabulary that the transformer will consider.
-  Terms that occur in `< max_doc_freq` documents will not be considered by the
-  transformer. A value of 0.01 means that only terms that are at least in 1% of the
-  documents will be included.
-- `κ=2`: The term frequency saturation characteristic. Higher values represent slower
-  saturation. What we mean by saturation is the degree to which a term occurring extra
-  times adds to the overall score.
-- `β=0.075`: Amplifies the particular document length compared to the average length. The
-  bigger β is, the more document length is amplified in terms of the overall score. The
-  default value is 0.75, and the bounds are restricted between 0 and 1.
-- `smooth_idf=true`: Assuming `smooth_idf` is false, IDF is calculated using the equation
-  `idf(t) = log [ n / df(t) ] + 1`, with term `d`, `n` documents, and document frequency
-  `df(t)`. The `1` term outside of the logarithm has the effect that terms with zero idf
-  (i.e. they occur in all documents) will not be entirely ignored. If `smooth_idf` is
-  true, another `1` term is added, giving: `idf(t) = log [ (1 + n) / (1 + df(t)) ] + 1`.
-  These `1`'s have the same affect as adding an extra document which contains every term
-  in the collection exactly once, preventing division by 0.
-
-# Operations
-
-- `transform(mach, Xnew)`: Return a transformed matrix of type
-  `ScientificTypesBase.Continuous` given new features `Xnew`.
-
-# Fitted parameters
-
-The fields of `fitted_params(mach)` are:
-
-- `vocab`: A vector containing the string used in the transformer's vocabulary.
-- `idf_vector`: The transformer's calculated IDF vector.
-- `mean_words_in_docs`: The mean number of words in each document.
-
-# Examples
-
-`BM25Transformer` accepts a variety of inputs. In the example below, we use simple
-tokenized documents:
-
-```julia
-using MLJ, MLJText, TextAnalysis
-
-docs = ["Hi my name is Sam.", "How are you today?"]
-bm25_transformer = BM25Transformer()
-mach = machine(bm25_transformer, tokenize.(docs))
-MLJ.fit!(mach)
-
-fitted_params(mach)
-
-bm25_mat = transform(mach, tokenize.(docs))
-```
-
-We can also use the `TextAnalysis` package to implement funcionality similar to SciKit
-Learn's N-grams:
-
-```julia
-using MLJ, MLJText, TextAnalysis
-
-docs = ["Hi my name is Sam.", "How are you today?"]
-corpus = Corpus(NGramDocument.(docs, 1, 2))
-ngram_docs = ngrams.(corpus)
-
-bm25_transformer = BM25Transformer()
-mach = machine(bm25_transformer, ngram_docs)
-MLJ.fit!(mach)
-fitted_params(mach)
-
-bm25_mat = transform(mach, ngram_docs)
-```
-
-See also
-[`TfidfTransformer`](@ref), [`CountTransformer`](@ref)
-"""
 mutable struct BM25Transformer <: AbstractTextTransformer
     max_doc_freq::Float64
     min_doc_freq::Float64
@@ -213,3 +110,80 @@ MMI.metadata_model(BM25Transformer,
                docstring = "Build BM-25 matrix from raw documents",
                path = "MLJText.BM25Transformer"
                )
+
+# # DOC STRING
+
+"""
+$(MMI.doc_header(BM25Transformer))
+
+The transformer converts a collection of documents, tokenized or pre-parsed as bags of
+words/ngrams, to a matrix of [Okapi BM25 document-word
+statistics](https://en.wikipedia.org/wiki/Okapi_BM25). The BM25 scoring function uses both
+term frequency (TF) and inverse document frequency (IDF, defined below), as in
+[`TfidfTransformer`](ref), but additionally adjusts for the probability that a user will
+consider a search result relevant based, on the terms in the search query and those in
+each document.
+
+$DOC_IDF
+
+References:
+
+- http://ethen8181.github.io/machine-learning/search/bm25_intro.html
+- https://en.wikipedia.org/wiki/Okapi_BM25
+- https://nlp.stanford.edu/IR-book/html/htmledition/okapi-bm25-a-non-binary-model-1.html
+
+# Training data
+
+In MLJ or MLJBase, bind an instance `model` to data with
+
+    mach = machine(model, X)
+
+$DOC_IDF
+
+Train the machine using `fit!(mach, rows=...)`.
+
+# Hyper-parameters
+
+- `max_doc_freq=1.0`: Restricts the vocabulary that the transformer will consider.
+  Terms that occur in `> max_doc_freq` documents will not be considered by the
+  transformer. For example, if `max_doc_freq` is set to 0.9, terms that are in more than
+  90% of the documents will be removed.
+
+- `min_doc_freq=0.0`: Restricts the vocabulary that the transformer will consider.
+  Terms that occur in `< max_doc_freq` documents will not be considered by the
+  transformer. A value of 0.01 means that only terms that are at least in 1% of the
+  documents will be included.
+
+- `κ=2`: The term frequency saturation characteristic. Higher values represent slower
+  saturation. What we mean by saturation is the degree to which a term occurring extra
+  times adds to the overall score.
+
+- `β=0.075`: Amplifies the particular document length compared to the average length. The
+  bigger β is, the more document length is amplified in terms of the overall score. The
+  default value is 0.75, and the bounds are restricted between 0 and 1.
+
+- `smooth_idf=true`: Control which definition of IDF to use (see above).
+
+# Operations
+
+- `transform(mach, Xnew)`: Based on the vocabulary, IDF, and mean word counts learned in
+  training, return the matrix of BM25 scores for `Xnew`, a vector of the same form as `X`
+  above. The matrix has size `(n, p)`, where `n = length(Xnew)` and `p` the size of the
+  vocabulary. Tokens/ngrams not appearing in the learned vocabulary are scored zero.
+
+# Fitted parameters
+
+The fields of `fitted_params(mach)` are:
+
+- `vocab`: A vector containing the string used in the transformer's vocabulary.
+
+- `idf_vector`: The transformer's calculated IDF vector.
+
+- `mean_words_in_docs`: The mean number of words in each document.
+
+$(doc_examples(:BM25Transformer))
+
+See also [`TfidfTransformer`](@ref), [`CountTransformer`](@ref)
+
+"""
+BM25Transformer
