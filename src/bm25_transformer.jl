@@ -107,7 +107,6 @@ MMI.metadata_model(BM25Transformer,
                    AbstractVector{<:STB.Multiset{STB.Textual}}
                    },
                output_scitype = AbstractMatrix{STB.Continuous},
-               docstring = "Build BM-25 matrix from raw documents",
                path = "MLJText.BM25Transformer"
                )
 

@@ -71,7 +71,6 @@ MMI.metadata_model(CountTransformer,
                    AbstractVector{<:STB.Multiset{STB.Textual}}
                    },
                output_scitype = AbstractMatrix{STB.Continuous},
-               docstring = "Build Bag-of-Words matrix from word counts for corpus of documents",
                path = "MLJText.CountTransformer"
                )
 
