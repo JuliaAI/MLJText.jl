@@ -1,54 +1,10 @@
-"""
-    TfidfTransformer()
-
-The following is taken largely from scikit-learn's documentation:
-https://github.com/scikit-learn/scikit-learn/blob/main/sklearn/feature_extraction/text.py
-
-Convert a collection of raw documents to a matrix of TF-IDF features.
-
-"TF" means term-frequency while "TF-IDF" means term-frequency times
-inverse document-frequency.  This is a common term weighting scheme in
-information retrieval, that has also found good use in document
-classification.
-
-The goal of using TF-IDF instead of the raw frequencies of occurrence
-of a token in a given document is to scale down the impact of tokens
-that occur very frequently in a given corpus and that are hence
-empirically less informative than features that occur in a small
-fraction of the training corpus.
-
-The formula that is used to compute the TF-IDF for a term `t` of a
-document `d` in a document set is `tf_idf(t, d) = tf(t, d) *
-idf(t)`. Assuming `smooth_idf=false`, `idf(t) = log [ n / df(t) ] + 1`
-where `n` is the total number of documents in the document set and
-`df(t)` is the document frequency of `t`. The document frequency is
-the number of documents in the document set that contain the term
-`t`. The effect of adding “1” to the idf in the equation above is that
-terms with zero idf, i.e., terms that occur in all documents in a
-training set, will not be entirely ignored. (Note that the idf formula
-above differs from that appearing in standard texts, `idf(t) = log [ n
-/ (df(t) + 1) ])`.
-
-If `smooth_idf=true` (the default), the constant “1” is added to the
-numerator and denominator of the idf as if an extra document was seen
-containing every term in the collection exactly once, which prevents
-zero divisions: `idf(t) = log [ (1 + n) / (1 + df(t)) ] + 1`.
-
-The parameters `max_doc_freq` and `min_doc_freq` restrict the vocabulary
-that the transformer will consider. `max_doc_freq` indicates that terms in only
-up to the specified percentage of documents will be considered. For example, if
-`max_doc_freq` is set to 0.9, terms that are in more than 90% of documents
-will be removed. Similarly, the `min_doc_freq` parameter restricts terms in the
-other direction. A value of 0.01 means that only terms that are at least in 1% of
-documents will be included.
-"""
 mutable struct TfidfTransformer <: AbstractTextTransformer
     max_doc_freq::Float64
     min_doc_freq::Float64
     smooth_idf::Bool
 end
 
-function TfidfTransformer(; max_doc_freq::Float64 = 1.0, min_doc_freq::Float64 = 0.0, smooth_idf::Bool = true)    
+function TfidfTransformer(; max_doc_freq::Float64 = 1.0, min_doc_freq::Float64 = 0.0, smooth_idf::Bool = true)
     transformer = TfidfTransformer(max_doc_freq, min_doc_freq, smooth_idf)
     message = MMI.clean!(transformer)
     isempty(message) || @warn message
@@ -60,7 +16,7 @@ struct TfidfTransformerResult
     idf_vector::Vector{Float64}
 end
 
-get_result(::TfidfTransformer, idf::Vector{<:AbstractFloat}, vocab::Vector{String}, ::SparseMatrixCSC) = 
+get_result(::TfidfTransformer, idf::Vector{<:AbstractFloat}, vocab::Vector{String}, ::SparseMatrixCSC) =
     TfidfTransformerResult(vocab, idf)
 
 function build_tfidf!(doc_term_mat::SparseMatrixCSC{T},
@@ -86,15 +42,14 @@ function build_tfidf!(doc_term_mat::SparseMatrixCSC{T},
 
     return tfidf
 end
-
-function _transform(::TfidfTransformer, 
+function _transform(::TfidfTransformer,
                     result::TfidfTransformerResult,
                     v::Corpus)
     doc_terms = build_dtm(v, result.vocab)
     tfidf = similar(doc_terms.dtm, eltype(result.idf_vector))
     build_tfidf!(doc_terms.dtm, tfidf, result.idf_vector)
 
-    # here we return the `adjoint` of our sparse matrix to conform to 
+    # here we return the `adjoint` of our sparse matrix to conform to
     # the `n x p` dimensions throughout MLJ
     return adjoint(tfidf)
 end
@@ -125,6 +80,72 @@ MMI.metadata_model(TfidfTransformer,
                    AbstractVector{<:STB.Multiset{STB.Textual}}
                    },
                output_scitype = AbstractMatrix{STB.Continuous},
-               docstring = "Build TF-IDF matrix from raw documents",
-               path = "MLJText.TfidfTransformer"
+               human_name="TF-IFD transformer",
+               path = "MLJText.TfidfTransformer",
                )
+
+
+# # DOCUMENT STRING
+
+"""
+$(MMI.doc_header(TfidfTransformer))
+
+The transformer converts a collection of documents, tokenized or pre-parsed as bags of
+words/ngrams, to a matrix of [TF-IDF
+scores](https://en.wikipedia.org/wiki/Tf–idf#Inverse_document_frequency_2). Here "TF"
+means term-frequency while "IDF" means inverse document frequency (defined below). The
+TF-IDF score is the product of the two. This is a common term weighting scheme in
+information retrieval, that has also found good use in document classification. The goal
+of using TF-IDF instead of the raw frequencies of occurrence of a token in a given
+document is to scale down the impact of tokens that occur very frequently in a given
+corpus and that are hence empirically less informative than features that occur in a small
+fraction of the training corpus.
+
+$DOC_IDF
+
+# Training data
+
+In MLJ or MLJBase, bind an instance `model` to data with
+
+    mach = machine(model, X)
+
+$DOC_TRANSFORMER_INPUTS
+
+Train the machine using `fit!(mach, rows=...)`.
+
+# Hyper-parameters
+
+- `max_doc_freq=1.0`: Restricts the vocabulary that the transformer will consider.  Terms
+  that occur in `> max_doc_freq` documents will not be considered by the transformer. For
+  example, if `max_doc_freq` is set to 0.9, terms that are in more than 90% of the
+  documents will be removed.
+
+- `min_doc_freq=0.0`: Restricts the vocabulary that the transformer will consider.  Terms
+  that occur in `< max_doc_freq` documents will not be considered by the transformer. A
+  value of 0.01 means that only terms that are at least in 1% of the documents will be
+  included.
+
+- `smooth_idf=true`: Control which definition of IDF to use (see above).
+
+# Operations
+
+- `transform(mach, Xnew)`: Based on the vocabulary and IDF learned in training, return the
+  matrix of TF-IDF scores for `Xnew`, a vector of the same form as `X` above. The matrix
+  has size `(n, p)`, where `n = length(Xnew)` and `p` the size of the
+  vocabulary. Tokens/ngrams not appearing in the learned vocabulary are scored zero.
+
+# Fitted parameters
+
+The fields of `fitted_params(mach)` are:
+
+- `vocab`: A vector containing the strings used in the transformer's vocabulary.
+
+- `idf_vector`: The transformer's calculated IDF vector.
+
+
+$(doc_examples(:TfidfTransformer))
+
+See also [`CountTransformer`](@ref), [`BM25Transformer`](@ref)
+
+"""
+TfidfTransformer
