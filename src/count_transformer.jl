@@ -1,30 +1,9 @@
-"""
-    CountTransformer()
-
-Convert a collection of raw documents to matrix representing a bag-of-words structure from 
-word counts. Essentially, a bag-of-words approach to representing documents in a matrix is 
-comprised of a count of every word in the document corpus/collection for every document. 
-This is a simple but often quite powerful way of representing documents as vectors. The 
-resulting representation is a matrix with rows representing every document in the corpus 
-and columns representing every word in the corpus. The value for each cell is the raw count 
-of a particular word in a particular document.
-
-Similarly to the `TfidfTransformer`, the vocabulary considered can be restricted
-to words occuring in a maximum or minimum portion of documents.
-The parameters `max_doc_freq` and `min_doc_freq` restrict the vocabulary
-that the transformer will consider. `max_doc_freq` indicates that terms in only
-up to the specified percentage of documents will be considered. For example, if
-`max_doc_freq` is set to 0.9, terms that are in more than 90% of documents
-will be removed. Similarly, the `min_doc_freq` parameter restricts terms in the
-other direction. A value of 0.01 means that only terms that are at least in 1% of
-documents will be included.
-"""
 mutable struct CountTransformer <: AbstractTextTransformer
     max_doc_freq::Float64
     min_doc_freq::Float64
 end
 
-function CountTransformer(; max_doc_freq::Float64 = 1.0, min_doc_freq::Float64 = 0.0)    
+function CountTransformer(; max_doc_freq::Float64 = 1.0, min_doc_freq::Float64 = 0.0)
     transformer = CountTransformer(max_doc_freq, min_doc_freq)
     message = MMI.clean!(transformer)
     isempty(message) || @warn message
@@ -37,7 +16,7 @@ end
 
 function _fit(transformer::CountTransformer, verbosity::Int, X::Corpus)
     # process corpus vocab
-    update_lexicon!(X)    
+    update_lexicon!(X)
 
     # calculate min and max doc freq limits
     if transformer.max_doc_freq < 1 || transformer.min_doc_freq > 0
@@ -58,12 +37,12 @@ function _fit(transformer::CountTransformer, verbosity::Int, X::Corpus)
     return fitresult, cache, NamedTuple()
 end
 
-function _transform(::CountTransformer, 
+function _transform(::CountTransformer,
                     result::CountTransformerResult,
                     v::Corpus)
     dtm_matrix = build_dtm(v, result.vocab)
 
-    # here we return the `adjoint` of our sparse matrix to conform to 
+    # here we return the `adjoint` of our sparse matrix to conform to
     # the `n x p` dimensions throughout MLJ
     return adjoint(dtm_matrix.dtm)
 end
@@ -92,6 +71,55 @@ MMI.metadata_model(CountTransformer,
                    AbstractVector{<:STB.Multiset{STB.Textual}}
                    },
                output_scitype = AbstractMatrix{STB.Continuous},
-               docstring = "Build Bag-of-Words matrix from word counts for corpus of documents",
                path = "MLJText.CountTransformer"
                )
+
+# # DOCUMENT STRING
+
+"""
+$(MMI.doc_header(CountTransformer))
+
+The transformer converts a collection of documents, tokenized or pre-parsed as bags of
+words/ngrams, to a matrix of term counts.
+
+# Training data
+
+In MLJ or MLJBase, bind an instance `model` to data with
+
+    mach = machine(model, X)
+
+$DOC_TRANSFORMER_INPUTS
+
+Train the machine using `fit!(mach, rows=...)`.
+
+# Hyper-parameters
+
+- `max_doc_freq=1.0`: Restricts the vocabulary that the transformer will consider.
+  Terms that occur in `> max_doc_freq` documents will not be considered by the
+  transformer. For example, if `max_doc_freq` is set to 0.9, terms that are in more than
+  90% of the documents will be removed.
+
+- `min_doc_freq=0.0`: Restricts the vocabulary that the transformer will consider.
+  Terms that occur in `< max_doc_freq` documents will not be considered by the
+  transformer. A value of 0.01 means that only terms that are at least in 1% of the
+  documents will be included.
+
+# Operations
+
+- `transform(mach, Xnew)`: Based on the vocabulary learned in training, return the matrix
+  of counts for `Xnew`, a vector of the same form as `X` above. The matrix has size `(n,
+  p)`, where `n = length(Xnew)` and `p` the size of the vocabulary. Tokens/ngrams not
+  appearing in the learned vocabulary are scored zero.
+
+# Fitted parameters
+
+The fields of `fitted_params(mach)` are:
+
+- `vocab`: A vector containing the string used in the transformer's vocabulary.
+
+$(doc_examples(:CountTransformer))
+
+See also
+[`TfidfTransformer`](@ref), [`BM25Transformer`](@ref)
+"""
+CountTransformer
