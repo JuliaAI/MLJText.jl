@@ -119,7 +119,7 @@ The transformer converts a collection of documents, tokenized or pre-parsed as b
 words/ngrams, to a matrix of [Okapi BM25 document-word
 statistics](https://en.wikipedia.org/wiki/Okapi_BM25). The BM25 scoring function uses both
 term frequency (TF) and inverse document frequency (IDF, defined below), as in
-[`TfidfTransformer`](ref), but additionally adjusts for the probability that a user will
+[`TfidfTransformer`](@ref), but additionally adjusts for the probability that a user will
 consider a search result relevant based, on the terms in the search query and those in
 each document.
 
