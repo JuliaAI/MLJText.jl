@@ -119,7 +119,7 @@ The transformer converts a collection of documents, tokenized or pre-parsed as b
 words/ngrams, to a matrix of [Okapi BM25 document-word
 statistics](https://en.wikipedia.org/wiki/Okapi_BM25). The BM25 scoring function uses both
 term frequency (TF) and inverse document frequency (IDF, defined below), as in
-[`TfidfTransformer`](ref), but additionally adjusts for the probability that a user will
+[`TfidfTransformer`](@ref), but additionally adjusts for the probability that a user will
 consider a search result relevant based, on the terms in the search query and those in
 each document.
 
@@ -137,21 +137,21 @@ In MLJ or MLJBase, bind an instance `model` to data with
 
     mach = machine(model, X)
 
-$DOC_IDF
+$DOC_TRANSFORMER_INPUTS
 
 Train the machine using `fit!(mach, rows=...)`.
 
 # Hyper-parameters
 
-- `max_doc_freq=1.0`: Restricts the vocabulary that the transformer will consider.
-  Terms that occur in `> max_doc_freq` documents will not be considered by the
-  transformer. For example, if `max_doc_freq` is set to 0.9, terms that are in more than
-  90% of the documents will be removed.
+- `max_doc_freq=1.0`: Restricts the vocabulary that the transformer will consider. Terms
+  that occur in `> max_doc_freq` documents will not be considered by the transformer. For
+  example, if `max_doc_freq` is set to 0.9, terms that are in more than 90% of the
+  documents will be removed.
 
-- `min_doc_freq=0.0`: Restricts the vocabulary that the transformer will consider.
-  Terms that occur in `< max_doc_freq` documents will not be considered by the
-  transformer. A value of 0.01 means that only terms that are at least in 1% of the
-  documents will be included.
+- `min_doc_freq=0.0`: Restricts the vocabulary that the transformer will consider. Terms
+  that occur in `< max_doc_freq` documents will not be considered by the transformer. A
+  value of 0.01 means that only terms that are at least in 1% of the documents will be
+  included.
 
 - `κ=2`: The term frequency saturation characteristic. Higher values represent slower
   saturation. What we mean by saturation is the degree to which a term occurring extra
