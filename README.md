@@ -23,7 +23,7 @@ The TF-IDF Transformer accepts a variety of inputs for the raw documents that on
 Raw documents can simply be provided as tokenized documents.
 
 ```julia
-using MLJ, MLJText, TextAnalysis
+using MLJ, MLJText, WordTokenizers
 
 docs = ["Hi my name is Sam.", "How are you today?"]
 tfidf_transformer = TfidfTransformer()
@@ -61,7 +61,7 @@ BM25 is an approach similar to that of TF-IDF in terms of representing documents
 This transformer is used in much the same way as the `TfidfTransformer`.
 
 ```julia
-using MLJ, MLJText, TextAnalysis
+using MLJ, MLJText, WordTokenizers
 
 docs = ["Hi my name is Sam.", "How are you today?"]
 bm25_transformer = BM25Transformer()
@@ -94,7 +94,7 @@ The `MLJText` package also offers a way to represent documents using the simpler
 
 ### Usage
 ```julia
-using MLJ, MLJText, TextAnalysis
+using MLJ, MLJText, WordTokenizers
 
 docs = ["Hi my name is Sam.", "How are you today?"]
 count_transformer = CountTransformer()
